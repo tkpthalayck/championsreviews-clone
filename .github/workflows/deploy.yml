@@ -33,6 +33,19 @@ jobs:
       - name: Build site (includes Pagefind search index)
         run: npm run build
 
+      - name: Stage a copy of dist/ under its deployed base path
+        # Astro builds to dist/about-us/ directly - there's no literal
+        # "championsreviews-clone" subfolder in the output. That prefix only
+        # exists in URLs because GitHub Pages serves this repo under a
+        # subpath, so root-relative hrefs like "/championsreviews-clone/
+        # about-us/" won't resolve against dist/ as-is. A real copy (not a
+        # symlink - a self-referential one caused infinite recursion, and
+        # lychee's --remap couldn't take a space-containing value through
+        # this action's arg passing) bridges the gap safely.
+        run: |
+          mkdir -p /tmp/pages-check/championsreviews-clone
+          cp -r dist/. /tmp/pages-check/championsreviews-clone/
+
       - name: Check for broken internal links
         # --offline skips every remote URL entirely (the hundreds of Amazon
         # affiliate/product-image links and social share links per review
@@ -41,22 +54,13 @@ jobs:
         # actually meant to catch. Checking live external links isn't useful
         # here anyway: it can't affect the build, and hitting hundreds of
         # third-party hosts is slow/flaky (some visibly hung indefinitely).
-        #
-        # Astro builds to dist/about-us/ directly - there's no literal
-        # "championsreviews-clone" subfolder in the output. That prefix only
-        # exists in URLs because GitHub Pages serves this repo under a
-        # subpath. --remap strips it before resolving against --root-dir,
-        # so "/championsreviews-clone/about-us/" resolves to dist/about-us/
-        # (a self-referential symlink was tried first and caused infinite
-        # recursion - this is the safe way to bridge that gap).
         uses: lycheeverse/lychee-action@v2
         with:
           args: >
-            --root-dir ${{ github.workspace }}/dist
-            --remap "^/championsreviews-clone/? /"
+            --root-dir /tmp/pages-check
             --no-progress
             --offline
-            'dist/**/*.html'
+            '/tmp/pages-check/**/*.html'
           fail: true
 
       - name: Validate HTML
