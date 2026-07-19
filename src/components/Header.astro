@@ -1,0 +1,55 @@
+---
+const base = import.meta.env.BASE_URL;
+const nav = [
+  { label: 'Home', href: `${base}` },
+  { label: 'Reviews', href: `${base}reviews/` },
+  { label: 'Buying Guides', href: `${base}guides/` },
+  { label: 'About', href: `${base}about-us/` },
+];
+---
+
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between gap-4">
+      <a href={base} class="flex items-center gap-2 font-extrabold text-lg text-[--color-brand-purple-dark]">
+        <span>ChampionsReview<span class="text-[--color-brand-purple]">.Com</span></span>
+      </a>
+
+      <nav aria-label="Primary" class="hidden md:flex items-center gap-6">
+        {nav.map((item) => (
+          <a href={item.href} class="text-sm font-medium text-gray-700 hover:text-[--color-brand-purple] transition-colors">{item.label}</a>
+        ))}
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href={`${base}search/`} aria-label="Search" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </a>
+        <button
+          id="mobile-menu-btn"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          class="md:hidden p-2 rounded hover:bg-gray-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <nav id="mobile-menu" aria-label="Primary mobile" class="hidden md:hidden pb-4 flex flex-col gap-1">
+      {nav.map((item) => (
+        <a href={item.href} class="rounded px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">{item.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const isOpen = menu?.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(isOpen));
+  });
+</script>

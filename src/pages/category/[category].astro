@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+
+export async function getStaticPaths() {
+  const toSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const allPosts = await getCollection('posts');
+  const byCategory = new Map<string, { name: string; posts: typeof allPosts }>();
+  for (const post of allPosts) {
+    for (const name of post.data.categories) {
+      const slug = toSlug(name);
+      if (!byCategory.has(slug)) byCategory.set(slug, { name, posts: [] });
+      byCategory.get(slug)!.posts.push(post);
+    }
+  }
+  return [...byCategory.entries()].map(([slug, { name, posts }]) => ({
+    params: { category: slug },
+    props: { name, posts: posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()) },
+  }));
+}
+
+const { name, posts } = Astro.props;
+---
+
+<BaseLayout title={name} description={`Browse all ${name} reviews and comparisons on Champions Reviews.`}>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <p class="text-sm font-semibold uppercase tracking-wide text-[--color-brand-purple]">Category</p>
+    <h1 class="mt-1 text-3xl font-extrabold text-gray-900">{name}</h1>
+    <p class="mt-2 text-gray-600">{posts.length} review{posts.length === 1 ? '' : 's'}</p>
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {posts.map((post) => (
+        <PostCard slug={post.data.slug} title={post.data.title} excerpt={post.data.excerpt} date={post.data.date} featuredImage={post.data.featuredImage} categories={post.data.categories} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

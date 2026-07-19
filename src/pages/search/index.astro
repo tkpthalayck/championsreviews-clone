@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Search" description="Search all Champions Reviews product reviews, comparisons, and buying guides.">
+  <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-6">Search</h1>
+    <div id="search"></div>
+  </div>
+
+  <link href={`${base}pagefind/pagefind-ui.css`} rel="stylesheet" />
+  <script type="module" define:vars={{ base }}>
+    // Pagefind is generated as a static asset by a post-build step (`pagefind
+    // --site dist`), not an npm-installed runtime dependency - it indexes the
+    // built HTML output itself, so results are only available in production
+    // builds/preview, not in `astro dev`.
+    import(`${base}pagefind/pagefind-ui.js`).then(() => {
+      // eslint-disable-next-line no-undef
+      new PagefindUI({ element: '#search', showSubResults: true, baseUrl: base });
+    }).catch(() => {
+      document.getElementById('search').innerHTML = '<p class="text-gray-500">Search index is only available on the deployed site.</p>';
+    });
+  </script>
+</BaseLayout>

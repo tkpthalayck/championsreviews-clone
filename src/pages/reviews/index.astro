@@ -1,0 +1,32 @@
+---
+// Redirects conceptually to page 1 of the paginated [...page].astro route -
+// kept as a thin wrapper so /reviews/ works without a trailing page number.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+
+const PAGE_SIZE = 24;
+const allPosts = (await getCollection('posts')).sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const pageOne = allPosts.slice(0, PAGE_SIZE);
+const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="All Reviews" description="Browse every product review and comparison from Champions Reviews.">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-extrabold text-gray-900">All Reviews</h1>
+    <p class="mt-2 text-gray-600">{allPosts.length} product reviews and comparisons.</p>
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {pageOne.map((post) => (
+        <PostCard slug={post.data.slug} title={post.data.title} excerpt={post.data.excerpt} date={post.data.date} featuredImage={post.data.featuredImage} categories={post.data.categories} />
+      ))}
+    </div>
+    {totalPages > 1 && (
+      <nav aria-label="Pagination" class="mt-10 flex justify-center gap-2">
+        {Array.from({ length: totalPages }, (_, i) => (
+          <a href={i === 0 ? `${base}reviews/` : `${base}reviews/${i + 1}/`} class={`rounded-lg px-4 py-2 text-sm font-medium ${i === 0 ? 'bg-[--color-brand-purple] text-white' : 'border border-gray-200 text-gray-700 hover:border-[--color-brand-purple]'}`}>{i + 1}</a>
+        ))}
+      </nav>
+    )}
+  </div>
+</BaseLayout>

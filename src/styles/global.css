@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors pulled from the live ChampionsReviews.com WordPress site's
+     actual design (subscribe sections, star ratings, comparison tables) -
+     kept consistent with the source site's identity, not reinvented. */
+  --color-brand-purple: #8920F3;
+  --color-brand-purple-dark: #290342;
+  --color-brand-blue: #1F51FF;
+  --color-brand-gold: #FEA419;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-brand-blue);
+    outline-offset: 2px;
+  }
+}

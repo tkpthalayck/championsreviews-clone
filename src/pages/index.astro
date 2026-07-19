@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+
+const allPosts = (await getCollection('posts')).sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const recent = allPosts.slice(0, 9);
+
+const categoryCounts = new Map<string, number>();
+for (const p of allPosts) {
+  for (const c of p.data.categories) categoryCounts.set(c, (categoryCounts.get(c) ?? 0) + 1);
+}
+const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Discover the Best Picks from Amazon, Walmart & More"
+  description="Champions Reviews compares real, well-reviewed products so you can shop with confidence - honest comparisons, buying guides, and the best deals across categories."
+>
+  <section class="bg-gradient-to-b from-[--color-brand-purple-dark] to-[--color-brand-purple] text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Discover the Best Picks<br class="hidden sm:block" /> from Amazon, Walmart &amp; More</h1>
+      <p class="mt-4 text-lg text-purple-100 max-w-2xl mx-auto">Real prices, real ratings, honest comparisons - so you can shop smarter, not harder.</p>
+      <form action={`${base}search/`} class="mt-8 max-w-xl mx-auto flex gap-2">
+        <label for="hero-search" class="sr-only">Search reviews</label>
+        <input id="hero-search" name="q" type="search" placeholder="Search for a product, comparison, or guide..." class="flex-1 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400" />
+        <button type="submit" class="rounded-lg bg-[--color-brand-gold] px-6 py-3 font-semibold text-gray-900 hover:opacity-90 transition-opacity">Search</button>
+      </form>
+    </div>
+  </section>
+
+  {topCategories.length > 0 && (
+    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Browse by Category</h2>
+      <div class="flex flex-wrap gap-2">
+        {topCategories.map(([name]) => (
+          <a href={`${base}category/${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}/`} class="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:border-[--color-brand-purple] hover:text-[--color-brand-purple] transition-colors">{name}</a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-900">Recently Published</h2>
+      <a href={`${base}reviews/`} class="text-sm font-semibold text-[--color-brand-purple] hover:underline">View all &rarr;</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {recent.map((post) => (
+        <PostCard slug={post.data.slug} title={post.data.title} excerpt={post.data.excerpt} date={post.data.date} featuredImage={post.data.featuredImage} categories={post.data.categories} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

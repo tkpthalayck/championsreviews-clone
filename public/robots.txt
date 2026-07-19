@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tkpthalayck.github.io/championsreviews-clone/sitemap-index.xml
