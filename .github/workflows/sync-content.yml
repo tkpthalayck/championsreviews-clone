@@ -1,0 +1,67 @@
+name: Daily content sync from ChampionsReviews.com
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 06:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: content-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync content from championsreviews.com
+        # Read-only against WordPress (GET requests only) - only ever
+        # writes into this repo's src/content and public/images. Only
+        # touches posts/pages that are new or have a newer `modified`
+        # timestamp than what's already committed; see scripts/sync-content.mjs
+        # for the excluded-content list and duplicate/rename handling.
+        run: npm run sync-content
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ -n "$(git status --porcelain src/content public/images)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit synced content
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content public/images
+          git commit -m "Sync content from championsreviews.com ($(date -u +%Y-%m-%d))"
+          git push
+
+      - name: Trigger build and deploy
+        if: steps.changes.outputs.changed == 'true'
+        # A push made with the default GITHUB_TOKEN does not itself trigger
+        # other workflows' `push` events (GitHub's built-in anti-recursion
+        # rule), so deploy.yml wouldn't fire on its own here. Explicitly
+        # dispatching it is the standard workaround and needs no extra
+        # secret - deploy.yml already listens for workflow_dispatch.
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}

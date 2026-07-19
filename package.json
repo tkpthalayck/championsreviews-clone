@@ -10,7 +10,8 @@
     "build": "astro build && pagefind --site dist --output-subdir pagefind",
     "preview": "astro preview",
     "astro": "astro",
-    "export-content": "node scripts/export-content.mjs"
+    "export-content": "node scripts/export-content.mjs",
+    "sync-content": "node scripts/sync-content.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

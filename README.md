@@ -9,10 +9,10 @@ This is a read-only showcase sourced from the live WordPress site's content. It 
 ## Tech stack
 
 - **[Astro](https://astro.build)** — static site framework, ships zero JS by default
-- **[Tailwind CSS v4](https://tailwindcss.com)** — utility-first styling (Vite plugin, no separate config file needed)
+- **[Tailwind CSS v4](https://tailwindcss.com)** + **[@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography)** — utility-first styling and article-body typography
 - **[Pagefind](https://pagefind.app)** — static, build-time search index, no backend
-- **[astro-icon](https://www.astroicon.dev)** — tree-shaken SVG icons
 - **[@astrojs/sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/)** — automatic sitemap.xml
+- **[parse5](https://github.com/inikulin/parse5)** — sanitizes legacy WordPress body HTML at render time (fixes unclosed tags, hoists stray `<style>` blocks, strips dead JS-widget attributes)
 
 ## Project structure
 
@@ -30,7 +30,8 @@ src/
     category/[category].astro — per-category listing
     search/ — Pagefind-powered search UI
     [...slug].astro — renders migrated static pages (About, Privacy Policy, etc.)
-scripts/export-content.mjs — one-time/periodic content export from the live WordPress REST API
+scripts/export-content.mjs — one-time full export from the live WordPress REST API (initial migration)
+scripts/sync-content.mjs — incremental daily sync (new/updated posts+pages only)
 ```
 
 ## Commands
@@ -41,8 +42,21 @@ scripts/export-content.mjs — one-time/periodic content export from the live Wo
 | `npm run dev` | Local dev server at `localhost:4321` |
 | `npm run build` | Build to `./dist/` (also runs Pagefind indexing) |
 | `npm run preview` | Preview the production build locally |
-| `npm run export-content` | Re-pull latest content from championsreviews.com (read-only, safe to re-run) |
+| `npm run export-content` | Full re-export from championsreviews.com (read-only, safe to re-run) |
+| `npm run sync-content` | Incremental sync - only new/updated posts+pages since the last run |
 
 ## Deployment
 
 Pushing to `main` triggers `.github/workflows/deploy.yml`: build → broken-link check ([lychee](https://lychee.cli.rs)) → HTML validation → [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) budget check (performance/accessibility/SEO/best-practices) → deploy to GitHub Pages via GitHub's official Pages actions.
+
+## Daily content sync
+
+`.github/workflows/sync-content.yml` runs every day at 06:00 UTC (and can be triggered manually from the Actions tab). It:
+
+1. Checks championsreviews.com's WordPress REST API (read-only GETs only - never writes anything back to the live site) for posts/pages that are new or have a newer `modified` timestamp than what's committed here.
+2. Writes only those changed items into `src/content/` and any new images into `public/images/` - unrelated content is left untouched.
+3. Commits and pushes the changes, which triggers `deploy.yml` to rebuild and redeploy the live site automatically.
+
+If nothing changed on WordPress, the job exits without committing anything - no-op runs don't trigger a rebuild.
+
+**Content intentionally excluded from the clone** (won't be resurrected by the sync even if still present on WordPress) is listed at the top of `scripts/sync-content.mjs`: 19 non-functional WooCommerce/account pages GitHub Pages can't run, and one post whose body was a corrupted paste from an unrelated app rather than real content. If either of those should actually be included going forward, remove them from the exclusion sets there.
