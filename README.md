@@ -59,4 +59,4 @@ Pushing to `main` triggers `.github/workflows/deploy.yml`: build → broken-link
 
 If nothing changed on WordPress, the job exits without committing anything - no-op runs don't trigger a rebuild.
 
-**Content intentionally excluded from the clone** (won't be resurrected by the sync even if still present on WordPress) is listed at the top of `scripts/sync-content.mjs`: 19 non-functional WooCommerce/account pages GitHub Pages can't run, and one post whose body was a corrupted paste from an unrelated app rather than real content. If either of those should actually be included going forward, remove them from the exclusion sets there.
+**Content intentionally excluded from the clone** (won't be resurrected by the sync even if still present on WordPress) is listed at the top of `scripts/sync-content.mjs`: 19 non-functional WooCommerce/account pages GitHub Pages can't run. (A post whose body was a corrupted Gamma.app export was fixed directly on WordPress on 2026-07-19 and no longer needs excluding.)

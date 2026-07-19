@@ -29,11 +29,12 @@ const EXCLUDED_PAGE_SLUGS = new Set([
   'register', 'shop', 'shop-internal-placeholder', 'subscribe-for-latest-updates',
   'user', 'user-login-page', 'user-sign-up-form',
 ]);
-// A post whose body was a ~430KB corrupted paste from an unrelated React
-// app, not real editorial content - see the project's final report.
-const EXCLUDED_POST_SLUGS = new Set([
-  'the-wonders-of-black-seed-oil-habbatus-sauda-in-islamic-tradition',
-]);
+// Formerly excluded a post whose body was a ~430KB corrupted paste from an
+// unrelated Gamma.app export (leaked Next.js/Supabase internals) - fixed
+// directly on WordPress on 2026-07-19, so nothing is excluded here anymore.
+// Kept as an empty set (rather than removed outright) so any future
+// corrupted-content case has an obvious place to go.
+const EXCLUDED_POST_SLUGS = new Set([]);
 
 async function wpFetch(endpoint) {
   for (let attempt = 1; attempt <= 5; attempt++) {
