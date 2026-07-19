@@ -37,7 +37,7 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: >
-            --base dist
+            --base ${{ github.workspace }}/dist
             --no-progress
             --exclude-mail
             --exclude 'https://championsreviews.com/.*'
