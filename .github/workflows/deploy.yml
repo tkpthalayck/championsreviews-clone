@@ -94,6 +94,16 @@ jobs:
         run: npm ci
       - name: Build site
         run: npm run build
+      - name: Stage a copy of dist/ under its deployed base path
+        # Astro bakes the /championsreviews-clone base path into every
+        # emitted asset/link, since that's where GitHub Pages actually
+        # serves this repo from. Lighthouse CI's staticDistDir server just
+        # serves the given directory at "/", so without this the page's
+        # own CSS/JS/image references 404 against the local test server -
+        # same fix as the lychee link-check step in the build job.
+        run: |
+          mkdir -p /tmp/pages-check/championsreviews-clone
+          cp -r dist/. /tmp/pages-check/championsreviews-clone/
       - name: Lighthouse CI (performance/SEO/accessibility/best-practices budget)
         uses: treosh/lighthouse-ci-action@v12
         with:

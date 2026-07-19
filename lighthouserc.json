@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": "./dist",
+      "staticDistDir": "/tmp/pages-check",
       "url": ["/championsreviews-clone/index.html", "/championsreviews-clone/reviews/index.html", "/championsreviews-clone/search/index.html"],
       "numberOfRuns": 1
     },
