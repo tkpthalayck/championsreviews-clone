@@ -2,9 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
+import Carousel from '../components/Carousel.astro';
 import { BASE as base } from '../lib/base';
 
 const allPosts = (await getCollection('posts')).sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const trending = allPosts.slice(0, 12);
 const recent = allPosts.slice(0, 9);
 
 const categoryCounts = new Map<string, number>();
@@ -33,6 +35,13 @@ const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).
       </div>
     </div>
   </section>
+
+  {trending.length > 0 && (
+    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Trending Now</h2>
+      <Carousel posts={trending} id="trending-carousel" />
+    </section>
+  )}
 
   {topCategories.length > 0 && (
     <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">

@@ -1,0 +1,51 @@
+---
+import PostCard from './PostCard.astro';
+
+interface Props {
+  posts: {
+    data: {
+      slug: string;
+      title: string;
+      excerpt: string;
+      date: string;
+      featuredImage: string | null;
+      categories: string[];
+    };
+  }[];
+  id: string;
+}
+const { posts, id } = Astro.props;
+---
+
+<div class="relative">
+  <div
+    id={id}
+    class="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+  >
+    {posts.map((post) => (
+      <div class="snap-start shrink-0 w-64 sm:w-72">
+        <PostCard slug={post.data.slug} title={post.data.title} excerpt={post.data.excerpt} date={post.data.date} featuredImage={post.data.featuredImage} categories={post.data.categories} />
+      </div>
+    ))}
+  </div>
+  <button type="button" data-carousel-prev={id} aria-label="Scroll left" class="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 h-10 w-10 items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-gray-600 hover:text-[--color-brand-purple] hover:border-[--color-brand-purple] transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button type="button" data-carousel-next={id} aria-label="Scroll right" class="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 h-10 w-10 items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-gray-600 hover:text-[--color-brand-purple] hover:border-[--color-brand-purple] transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+
+<script>
+  // Plain scrollBy - no carousel library needed for a feature this simple,
+  // and CSS scroll-snap already gives touch/trackpad swipe for free.
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-carousel-prev], [data-carousel-next]')) {
+    const targetId = btn.dataset.carouselPrev || btn.dataset.carouselNext;
+    const track = targetId ? document.getElementById(targetId) : null;
+    if (!track) continue;
+    const direction = btn.hasAttribute('data-carousel-prev') ? -1 : 1;
+    btn.addEventListener('click', () => {
+      track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' });
+    });
+  }
+</script>
