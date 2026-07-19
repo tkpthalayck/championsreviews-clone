@@ -13,9 +13,9 @@ export async function getStaticPaths({ paginate }) {
 const { page } = Astro.props;
 ---
 
-<BaseLayout title={`All Reviews - Page ${page.currentPage}`} description="Browse every product review and comparison from Champions Reviews.">
+<BaseLayout title={`All Posts - Page ${page.currentPage}`} description="Browse every product review and comparison from Champions Reviews.">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-    <h1 class="text-3xl font-extrabold text-gray-900">All Reviews</h1>
+    <h1 class="text-3xl font-extrabold text-gray-900">All Posts</h1>
     <p class="mt-2 text-gray-600">Page {page.currentPage} of {page.lastPage}</p>
     <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {page.data.map((post) => (
