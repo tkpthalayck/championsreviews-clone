@@ -59,6 +59,15 @@ function isElement(node: Node): node is Element {
   return 'tagName' in node;
 }
 
+// Text nodes can be nested inside child elements (e.g. <h2><strong>Title</strong></h2>),
+// so checking a heading's own childNodes for a single text node isn't enough
+// to tell whether it's genuinely empty.
+function getTextContent(node: Node): string {
+  if (defaultTreeAdapter.isTextNode(node)) return defaultTreeAdapter.getTextNodeContent(node);
+  const children = defaultTreeAdapter.getChildNodes(node as ParentNode) ?? [];
+  return children.map(getTextContent).join('');
+}
+
 // A handful of WordPress posts contain markup that's malformed against the
 // HTML5 spec: <style> blocks placed as arbitrary descendants (only valid in
 // <head> or as body's first child), unclosed <p> tags (legacy wpautop
@@ -124,6 +133,22 @@ export async function sanitizeBody(rawBody: string): Promise<{ html: string; sty
       if (child.tagName === 'main') {
         child.tagName = 'div';
         child.nodeName = 'div';
+      }
+      // Same idea for <h1>: the page template already renders one from the
+      // post's title (BaseLayout/[slug].astro), so a second one inside the
+      // body - left over from whichever of the ~5 different content
+      // pipelines authored that post - is a duplicate top-level heading,
+      // not a deliberate structural choice worth preserving as-is.
+      if (child.tagName === 'h1') {
+        child.tagName = 'h2';
+        child.nodeName = 'h2';
+      }
+      // An empty heading (some posts have literal <h1 class="wp-block-heading"></h1>)
+      // gives a screen-reader user navigating by heading list a stop with
+      // nothing to announce - worse than not being a heading landmark at all.
+      if (headings.has(child.tagName) && !getTextContent(child).trim()) {
+        defaultTreeAdapter.detachNode(child);
+        continue;
       }
       // Headings only permit phrasing content. A few product-widget posts
       // decorate a heading with a purely cosmetic <div class="section-line">
