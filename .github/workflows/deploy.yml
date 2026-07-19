@@ -33,6 +33,15 @@ jobs:
       - name: Build site (includes Pagefind search index)
         run: npm run build
 
+      - name: Alias dist root under the site's base path
+        # Astro builds to dist/about-us/ directly - there's no literal
+        # "championsreviews-clone" subfolder in the build output. That
+        # prefix only exists in URLs because GitHub Pages happens to serve
+        # this repo under a subpath. The self-referential symlink below
+        # makes root-relative hrefs like "/championsreviews-clone/about-us/"
+        # resolve locally the same way they will once actually deployed.
+        run: ln -s . dist/championsreviews-clone
+
       - name: Check for broken internal links
         # --offline skips every remote URL entirely (the hundreds of Amazon
         # affiliate/product-image links and social share links per review
