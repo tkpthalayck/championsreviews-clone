@@ -16,7 +16,7 @@ const formattedDate = new Date(date).toLocaleDateString('en-US', { year: 'numeri
   <div class="aspect-[16/10] overflow-hidden bg-gray-100">
     {featuredImage && (
       <img
-        src={`${base}${featuredImage.replace(/^\//, '')}`}
+        src={/^https?:\/\//.test(featuredImage) ? featuredImage : `${base}${featuredImage.replace(/^\//, '')}`}
         alt={title}
         loading="lazy"
         decoding="async"

@@ -1,0 +1,25 @@
+---
+// Buying Guides: posts whose title identifies them as a guide (vs. a
+// single-product review) - a real filtered view of existing content,
+// not a separate content type the WordPress export doesn't have.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { BASE as base } from '../../lib/base';
+
+const guides = (await getCollection('posts'))
+  .filter((post) => /guide/i.test(post.data.title))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<BaseLayout title="Buying Guides" description="In-depth buying guides to help you choose the right product across categories - comparisons, recommendations, and what to look for before you buy.">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <h1 class="text-3xl font-extrabold text-gray-900">Buying Guides</h1>
+    <p class="mt-2 text-gray-600">{guides.length} in-depth guides to help you choose with confidence.</p>
+    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {guides.map((post) => (
+        <PostCard slug={post.data.slug} title={post.data.title} excerpt={post.data.excerpt} date={post.data.date} featuredImage={post.data.featuredImage} categories={post.data.categories} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
