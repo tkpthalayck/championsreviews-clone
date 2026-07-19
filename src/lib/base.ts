@@ -45,27 +45,114 @@ function isElement(node: Node): node is Element {
 // implicit tags exactly as a browser would, and lets us pull out the parts
 // that don't belong in a content fragment (style/meta/title left over from
 // the pasted document) instead of guessing at them with regex.
+// Ids already used by the page's own chrome (Header/BaseLayout render
+// outside this fragment, so the parser can't see them) - seeded as
+// "already taken" so a colliding id from pasted content gets renamed
+// instead of silently shadowing the real one.
+const RESERVED_IDS = ['main', 'mobile-menu', 'mobile-menu-btn', 'back-to-top', 'hero-search'];
+
+// Not valid HTML attributes anywhere - one post's content was pasted from
+// a rich-text editor (ProseMirror/Notion-style, judging by the surrounding
+// data-node-view-wrapper/data-testid markup) that leaked its internal DOM
+// attributes into the exported HTML.
+const STRIP_ATTRS_GLOBAL = new Set(['as', 'level', 'hex', 'indent']);
+// Obsolete only on <table> - "width"/"border" are still valid on <img>,
+// which uses them legitimately throughout this content.
+const STRIP_ATTRS_TABLE = new Set(['cellpadding', 'cellspacing', 'width', 'border']);
+
 export function sanitizeBody(rawBody: string): { html: string; styles: string } {
   const fragment = parseFragment(rawBody, { scriptingEnabled: false });
   const styles: string[] = [];
+  const activeId = new Map<string, string>(RESERVED_IDS.map((id) => [id, id]));
+  const idOccurrences = new Map<string, number>(RESERVED_IDS.map((id) => [id, 1]));
+
+  const headings = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
   function walk(parent: ParentNode) {
+    const parentTag = isElement(parent as Node) ? (parent as Element).tagName : undefined;
     const children = defaultTreeAdapter.getChildNodes(parent) ?? [];
     for (const child of [...children]) {
-      if (isElement(child)) {
-        if (child.tagName === 'style') {
-          styles.push(defaultTreeAdapter.getTextNodeContent(child.childNodes[0] as any) ?? '');
-          defaultTreeAdapter.detachNode(child);
-          continue;
-        }
-        if (child.tagName === 'meta' || child.tagName === 'title' || child.tagName === 'base') {
-          // Leftovers from a full document pasted into the editor - not
-          // valid content in a body fragment.
-          defaultTreeAdapter.detachNode(child);
-          continue;
-        }
-        walk(child);
+      if (!isElement(child)) continue;
+
+      // <style>/<meta>/<title>/<base> are only valid in <head>, or - a few
+      // WordPress posts have an entire second HTML document pasted into
+      // their content - are leftovers from that document's own <head>.
+      if (child.tagName === 'style') {
+        styles.push(defaultTreeAdapter.getTextNodeContent(child.childNodes[0] as any) ?? '');
+        defaultTreeAdapter.detachNode(child);
+        continue;
       }
+      if (child.tagName === 'meta' || child.tagName === 'title' || child.tagName === 'base') {
+        defaultTreeAdapter.detachNode(child);
+        continue;
+      }
+      // <main> is a page-level landmark that must appear at most once per
+      // document; the real one is BaseLayout's. A few posts use <main> as
+      // a generic wrapper div for a product grid - keep the markup, drop
+      // the landmark semantics.
+      if (child.tagName === 'main') {
+        child.tagName = 'div';
+        child.nodeName = 'div';
+      }
+      // Headings only permit phrasing content. A few product-widget posts
+      // decorate a heading with a purely cosmetic <div class="section-line">
+      // underline - <span> renders identically here (this content never had
+      // the original WordPress theme's CSS carried over, so neither tag was
+      // producing a visible block-level line anyway) and is valid inline.
+      if (child.tagName === 'div' && parentTag && headings.has(parentTag)) {
+        child.tagName = 'span';
+        child.nodeName = 'span';
+      }
+      // An empty src is worse than no attribute at all - drops a dead
+      // network request and satisfies the "must be non-empty" rule.
+      child.attrs = child.attrs.filter((attr) => !((attr.name === 'src' || attr.name === 'href') && attr.value === ''));
+
+      // An <a> without an href isn't a hyperlink - some WordPress widgets
+      // (e.g. Elementor's toggle/accordion titles) use one purely as a
+      // clickable text wrapper for JS this static site doesn't ship. <span>
+      // is the correct tag for that and isn't "interactive content", which
+      // matters where these show up nested inside a role="button" element.
+      if (child.tagName === 'a' && !child.attrs.some((a) => a.name === 'href')) {
+        child.tagName = 'span';
+        child.nodeName = 'span';
+      }
+
+      const stripSet = child.tagName === 'table'
+        ? new Set([...STRIP_ATTRS_GLOBAL, ...STRIP_ATTRS_TABLE])
+        : STRIP_ATTRS_GLOBAL;
+      child.attrs = child.attrs.filter((attr) => !stripSet.has(attr.name));
+
+      // De-duplicate ids: WordPress product-card/rating widgets are copy-
+      // pasted per item, so the same id (e.g. an inline SVG gradient's
+      // id="hg") repeats dozens of times in one post. Rename every
+      // occurrence after the first, and keep any url(#id)/#id reference
+      // on this same element pointed at whichever id is currently active.
+      for (const attr of child.attrs) {
+        if (attr.name === 'id') {
+          const original = attr.value;
+          if (!idOccurrences.has(original)) {
+            idOccurrences.set(original, 1);
+            activeId.set(original, original);
+          } else {
+            const n = idOccurrences.get(original)! + 1;
+            idOccurrences.set(original, n);
+            const newId = `${original}-dup${n}`;
+            attr.value = newId;
+            activeId.set(original, newId);
+          }
+        }
+      }
+      for (const attr of child.attrs) {
+        if (attr.name === 'id') continue;
+        attr.value = attr.value.replace(/url\(#([^)]+)\)/g, (m, id) =>
+          activeId.has(id) ? `url(#${activeId.get(id)})` : m,
+        );
+        if (attr.value.startsWith('#') && activeId.has(attr.value.slice(1))) {
+          attr.value = `#${activeId.get(attr.value.slice(1))}`;
+        }
+      }
+
+      walk(child);
     }
   }
   walk(fragment);

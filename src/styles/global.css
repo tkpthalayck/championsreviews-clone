@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* Brand colors pulled from the live ChampionsReviews.com WordPress site's
@@ -16,4 +17,13 @@
     outline: 2px solid var(--color-brand-blue);
     outline-offset: 2px;
   }
+}
+
+/* Not a built-in typography-plugin variant (only prose-slate/gray/zinc/
+   neutral/stone ship by default) - defined here so links/bold text in
+   article bodies pick up the brand color instead of the plugin default. */
+.prose-purple {
+  --tw-prose-links: var(--color-brand-purple);
+  --tw-prose-bold: var(--color-brand-purple-dark);
+  --tw-prose-headings: var(--color-brand-purple-dark);
 }
