@@ -54,8 +54,15 @@ const RESERVED_IDS = ['main', 'mobile-menu', 'mobile-menu-btn', 'back-to-top', '
 // Not valid HTML attributes anywhere - one post's content was pasted from
 // a rich-text editor (ProseMirror/Notion-style, judging by the surrounding
 // data-node-view-wrapper/data-testid markup) that leaked its internal DOM
-// attributes into the exported HTML.
-const STRIP_ATTRS_GLOBAL = new Set(['as', 'level', 'hex', 'indent']);
+// attributes into the exported HTML. "frameborder" is obsolete HTML4 iframe
+// cruft. "onclick"/"tabindex"/ARIA widget-state attributes (aria-expanded,
+// aria-controls) describe JS-driven behavior (toggles, lightboxes) this
+// static site never ships the JS for - leaving them is a false promise to
+// assistive tech, worse than having no ARIA at all.
+const STRIP_ATTRS_GLOBAL = new Set([
+  'as', 'level', 'hex', 'indent', 'frameborder',
+  'onclick', 'tabindex', 'aria-expanded', 'aria-controls',
+]);
 // Obsolete only on <table> - "width"/"border" are still valid on <img>,
 // which uses them legitimately throughout this content.
 const STRIP_ATTRS_TABLE = new Set(['cellpadding', 'cellspacing', 'width', 'border']);
@@ -103,9 +110,33 @@ export function sanitizeBody(rawBody: string): { html: string; styles: string } 
         child.tagName = 'span';
         child.nodeName = 'span';
       }
-      // An empty src is worse than no attribute at all - drops a dead
-      // network request and satisfies the "must be non-empty" rule.
-      child.attrs = child.attrs.filter((attr) => !((attr.name === 'src' || attr.name === 'href') && attr.value === ''));
+      // role="button" is the same kind of dead widget-state marker as the
+      // attributes above, but its value matters (other roles, e.g.
+      // "presentation", are still meaningful without JS) so it's filtered
+      // by value rather than stripped by name.
+      child.attrs = child.attrs.filter((attr) => !(attr.name === 'role' && attr.value === 'button'));
+
+      // An empty href is worse than no attribute at all - satisfies the
+      // "must be non-empty" rule (an <a> without href gets turned into a
+      // <span> below anyway).
+      child.attrs = child.attrs.filter((attr) => !(attr.name === 'href' && attr.value === ''));
+      // Unlike href, <img> requires a src to be present at all, so an
+      // empty one is repointed at the site's fallback image instead of
+      // being dropped (seen on a dead JS-lightbox placeholder image).
+      if (child.tagName === 'img') {
+        const srcAttr = child.attrs.find((a) => a.name === 'src');
+        if (!srcAttr) {
+          child.attrs.push({ name: 'src', value: '/images/og-default.jpg' });
+        } else if (srcAttr.value === '') {
+          srcAttr.value = '/images/og-default.jpg';
+        }
+        // A missing alt is a real accessibility failure; "" (decorative)
+        // is the correct default when the source gives no better text -
+        // seen on 1x1 affiliate-network tracking pixels, which have none.
+        if (!child.attrs.some((a) => a.name === 'alt')) {
+          child.attrs.push({ name: 'alt', value: '' });
+        }
+      }
 
       // An <a> without an href isn't a hyperlink - some WordPress widgets
       // (e.g. Elementor's toggle/accordion titles) use one purely as a
