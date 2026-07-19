@@ -1,5 +1,28 @@
 import { parseFragment, serialize, defaultTreeAdapter } from 'parse5';
 import type { DefaultTreeAdapterMap } from 'parse5';
+import sharp from 'sharp';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+const PUBLIC_DIR = path.resolve('public');
+// Persists for the lifetime of the build process (all pages build in one
+// Node process), so the same locally-downloaded image referenced from
+// multiple posts only gets decoded once.
+const dimensionCache = new Map<string, { width: number; height: number } | null>();
+
+async function getImageDimensions(localPath: string) {
+  if (dimensionCache.has(localPath)) return dimensionCache.get(localPath)!;
+  let result: { width: number; height: number } | null = null;
+  try {
+    const buf = await fs.readFile(path.join(PUBLIC_DIR, localPath));
+    const meta = await sharp(buf).metadata();
+    if (meta.width && meta.height) result = { width: meta.width, height: meta.height };
+  } catch {
+    // leave as null - a missing/unreadable file isn't this function's problem to fix
+  }
+  dimensionCache.set(localPath, result);
+  return result;
+}
 
 // Astro's import.meta.env.BASE_URL does not reliably carry a trailing
 // slash across versions/configs, so every `${base}segment/`-style
@@ -67,11 +90,12 @@ const STRIP_ATTRS_GLOBAL = new Set([
 // which uses them legitimately throughout this content.
 const STRIP_ATTRS_TABLE = new Set(['cellpadding', 'cellspacing', 'width', 'border']);
 
-export function sanitizeBody(rawBody: string): { html: string; styles: string } {
+export async function sanitizeBody(rawBody: string): Promise<{ html: string; styles: string }> {
   const fragment = parseFragment(rawBody, { scriptingEnabled: false });
   const styles: string[] = [];
   const activeId = new Map<string, string>(RESERVED_IDS.map((id) => [id, id]));
   const idOccurrences = new Map<string, number>(RESERVED_IDS.map((id) => [id, 1]));
+  const imagesNeedingDimensions: Element[] = [];
 
   const headings = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
@@ -136,6 +160,20 @@ export function sanitizeBody(rawBody: string): { html: string; styles: string } 
         if (!child.attrs.some((a) => a.name === 'alt')) {
           child.attrs.push({ name: 'alt', value: '' });
         }
+        // Almost none of these ~1500 embedded images (98%+) carry explicit
+        // dimensions, causing layout shift as each one loads in. Lazy
+        // loading is a one-line win for every image regardless of source;
+        // real width/height needs the actual file, queued for the async
+        // pass below since it's local-images only (no point fetching a
+        // hotlinked fallback over the network just to size it).
+        if (!child.attrs.some((a) => a.name === 'loading')) {
+          child.attrs.push({ name: 'loading', value: 'lazy' });
+        }
+        const finalSrcAttr = child.attrs.find((a) => a.name === 'src')!;
+        const hasDimensions = child.attrs.some((a) => a.name === 'width') && child.attrs.some((a) => a.name === 'height');
+        if (!hasDimensions && finalSrcAttr.value.startsWith('/images/')) {
+          imagesNeedingDimensions.push(child);
+        }
       }
 
       // An <a> without an href isn't a hyperlink - some WordPress widgets
@@ -187,6 +225,15 @@ export function sanitizeBody(rawBody: string): { html: string; styles: string } 
     }
   }
   walk(fragment);
+
+  await Promise.all(imagesNeedingDimensions.map(async (img) => {
+    const src = img.attrs.find((a) => a.name === 'src')!.value;
+    const dims = await getImageDimensions(src);
+    if (dims) {
+      img.attrs.push({ name: 'width', value: String(dims.width) });
+      img.attrs.push({ name: 'height', value: String(dims.height) });
+    }
+  }));
 
   return { html: localizeBody(serialize(fragment)), styles: styles.join('\n') };
 }

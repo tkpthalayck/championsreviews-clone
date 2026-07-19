@@ -11,7 +11,7 @@ export async function getStaticPaths() {
 
 const { post, allPosts } = Astro.props;
 const { title, date, modified, excerpt, categories, tags, featuredImage, body } = post.data;
-const { html: sanitizedBody, styles: bodyStyles } = sanitizeBody(body);
+const { html: sanitizedBody, styles: bodyStyles } = await sanitizeBody(body);
 
 const related = allPosts
   .filter((p) => p.data.slug !== post.data.slug && p.data.categories.some((c) => categories.includes(c)))
