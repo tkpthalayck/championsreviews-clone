@@ -3,7 +3,7 @@
 // Terms, Contacts, etc.) at their original slugs.
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { localizeBody } from '../lib/base';
+import { sanitizeBody } from '../lib/base';
 
 export async function getStaticPaths() {
   const pages = await getCollection('pages');
@@ -12,11 +12,12 @@ export async function getStaticPaths() {
 
 const { page } = Astro.props;
 const { title, body } = page.data;
+const { html: sanitizedBody, styles: bodyStyles } = sanitizeBody(body);
 ---
 
-<BaseLayout title={title} description={`${title} - Champions Reviews`}>
+<BaseLayout title={title} description={`${title} - Champions Reviews`} extraStyles={bodyStyles}>
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
     <h1 class="text-3xl font-extrabold text-gray-900 mb-6">{title}</h1>
-    <article class="prose prose-purple max-w-none" set:html={localizeBody(body)} />
+    <article class="prose prose-purple max-w-none" set:html={sanitizedBody} />
   </div>
 </BaseLayout>

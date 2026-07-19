@@ -11,9 +11,10 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
+  extraStyles?: string;
 }
 
-const { title, description, image, type = 'website', publishedTime, modifiedTime } = Astro.props;
+const { title, description, image, type = 'website', publishedTime, modifiedTime, extraStyles } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const siteName = 'ChampionsReviews.Com';
 const resolvedImage = image
@@ -54,6 +55,7 @@ const ogImage = new URL(resolvedImage, Astro.site);
       name: siteName,
       url: Astro.site,
     })} />
+    {extraStyles && <style set:html={extraStyles} />}
   </head>
   <body class="min-h-screen flex flex-col bg-white text-gray-900 antialiased">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-brand-blue focus:text-white focus:px-4 focus:py-2 focus:rounded">Skip to content</a>
