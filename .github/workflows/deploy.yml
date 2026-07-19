@@ -34,12 +34,19 @@ jobs:
         run: npm run build
 
       - name: Check for broken internal links
+        # --offline skips every remote URL entirely (the hundreds of Amazon
+        # affiliate/product-image links and social share links per review
+        # page) and only validates that internal/relative links resolve to
+        # a real file in the build output - which is what this step is
+        # actually meant to catch. Checking live external links isn't useful
+        # here anyway: it can't affect the build, and hitting hundreds of
+        # third-party hosts is slow/flaky (some visibly hung indefinitely).
         uses: lycheeverse/lychee-action@v2
         with:
           args: >
             --root-dir ${{ github.workspace }}/dist
             --no-progress
-            --exclude 'https://championsreviews.com/.*'
+            --offline
             'dist/**/*.html'
           fail: true
 
