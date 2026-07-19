@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
+import { BASE as base } from '../../lib/base';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -10,7 +11,6 @@ export async function getStaticPaths() {
 
 const { post, allPosts } = Astro.props;
 const { title, date, modified, excerpt, categories, tags, featuredImage, body } = post.data;
-const base = import.meta.env.BASE_URL;
 
 const related = allPosts
   .filter((p) => p.data.slug !== post.data.slug && p.data.categories.some((c) => categories.includes(c)))

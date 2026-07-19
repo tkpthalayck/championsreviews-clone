@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
+import { BASE as base } from '../lib/base';
 
 const allPosts = (await getCollection('posts')).sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 const recent = allPosts.slice(0, 9);
@@ -11,8 +12,6 @@ for (const p of allPosts) {
   for (const c of p.data.categories) categoryCounts.set(c, (categoryCounts.get(c) ?? 0) + 1);
 }
 const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
-
-const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
