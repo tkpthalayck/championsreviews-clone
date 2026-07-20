@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import Carousel from '../components/Carousel.astro';
+import HeroSlideshow from '../components/HeroSlideshow.astro';
 import { BASE as base } from '../lib/base';
 
 const allPosts = (await getCollection('posts')).sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
@@ -20,6 +21,9 @@ function sampleRandom<T>(items: T[], count: number): T[] {
   return pool.slice(0, count);
 }
 const trending = sampleRandom(allPosts, 10);
+// A slide with no image is just a blank gradient - only pull from posts
+// that actually have one (285 of 295 do).
+const heroSlides = sampleRandom(allPosts.filter((p) => p.data.featuredImage), 5);
 
 const categoryCounts = new Map<string, number>();
 for (const p of allPosts) {
@@ -32,6 +36,12 @@ const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).
   title="Discover the Best Picks from Amazon, Walmart & More"
   description="Champions Reviews compares real, well-reviewed products so you can shop with confidence - honest comparisons, buying guides, and the best deals across categories."
 >
+  {heroSlides.length > 0 && (
+    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
+      <HeroSlideshow posts={heroSlides} id="hero-slideshow" />
+    </section>
+  )}
+
   <section class="bg-gradient-to-b from-[--color-brand-purple-dark] to-[--color-brand-purple] text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
       <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Discover the Best Picks<br class="hidden sm:block" /> from Amazon, Walmart &amp; More</h1>
