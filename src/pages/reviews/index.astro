@@ -24,7 +24,7 @@ const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
     {totalPages > 1 && (
       <nav aria-label="Pagination" class="mt-10 flex justify-center gap-2">
         {Array.from({ length: totalPages }, (_, i) => (
-          <a href={i === 0 ? `${base}reviews/` : `${base}reviews/${i + 1}/`} class={`rounded-lg px-4 py-2 text-sm font-medium ${i === 0 ? 'bg-[--color-brand-purple] text-white' : 'border border-gray-200 text-gray-700 hover:border-[--color-brand-purple]'}`}>{i + 1}</a>
+          <a href={i === 0 ? `${base}reviews/` : `${base}reviews/${i + 1}/`} class={`rounded-lg px-4 py-2 text-sm font-medium ${i === 0 ? 'bg-(--color-brand-purple) text-white' : 'border border-gray-200 text-gray-700 hover:border-(--color-brand-purple)'}`}>{i + 1}</a>
         ))}
       </nav>
     )}

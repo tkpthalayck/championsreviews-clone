@@ -28,10 +28,10 @@ const formattedDate = new Date(date).toLocaleDateString('en-US', { year: 'numeri
   </div>
   <div class="flex flex-col flex-1 p-5">
     {categories[0] && (
-      <span class="text-xs font-semibold uppercase tracking-wide text-[--color-brand-purple]">{categories[0]}</span>
+      <span class="text-xs font-semibold uppercase tracking-wide text-(--color-brand-purple)">{categories[0]}</span>
     )}
-    <h3 class="mt-1.5 font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-[--color-brand-purple] transition-colors">{title}</h3>
+    <h3 class="mt-1.5 font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-(--color-brand-purple) transition-colors">{title}</h3>
     <p class="mt-2 text-sm text-gray-600 line-clamp-2 flex-1">{excerpt}</p>
-    <time datetime={date} class="mt-3 text-xs text-gray-400">{formattedDate}</time>
+    <time datetime={date} class="mt-3 text-xs text-gray-600">{formattedDate}</time>
   </div>
 </a>

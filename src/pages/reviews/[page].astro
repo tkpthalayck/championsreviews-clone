@@ -24,7 +24,7 @@ const { page } = Astro.props;
     </div>
     <nav aria-label="Pagination" class="mt-10 flex justify-center gap-2">
       {Array.from({ length: page.lastPage }, (_, i) => (
-        <a href={i === 0 ? `${base}reviews/` : `${base}reviews/${i + 1}/`} class={`rounded-lg px-4 py-2 text-sm font-medium ${i + 1 === page.currentPage ? 'bg-[--color-brand-purple] text-white' : 'border border-gray-200 text-gray-700 hover:border-[--color-brand-purple]'}`}>{i + 1}</a>
+        <a href={i === 0 ? `${base}reviews/` : `${base}reviews/${i + 1}/`} class={`rounded-lg px-4 py-2 text-sm font-medium ${i + 1 === page.currentPage ? 'bg-(--color-brand-purple) text-white' : 'border border-gray-200 text-gray-700 hover:border-(--color-brand-purple)'}`}>{i + 1}</a>
       ))}
     </nav>
   </div>

@@ -11,13 +11,13 @@ const nav = [
 <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between gap-4">
-      <a href={base} class="flex items-center gap-2 font-extrabold text-lg text-[--color-brand-purple-dark]">
-        <span>ChampionsReview<span class="text-[--color-brand-purple]">.Com</span></span>
+      <a href={base} class="flex items-center gap-2 font-extrabold text-lg text-(--color-brand-purple-dark)">
+        <span>ChampionsReview<span class="text-(--color-brand-purple)">.Com</span></span>
       </a>
 
       <nav aria-label="Primary" class="hidden md:flex items-center gap-6">
         {nav.map((item) => (
-          <a href={item.href} class="text-sm font-medium text-gray-700 hover:text-[--color-brand-purple] transition-colors">{item.label}</a>
+          <a href={item.href} class="text-sm font-medium text-gray-700 hover:text-(--color-brand-purple) transition-colors">{item.label}</a>
         ))}
       </nav>
 
