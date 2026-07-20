@@ -28,6 +28,39 @@
   --tw-prose-headings: var(--color-brand-purple-dark);
 }
 
+/* 91 posts have <img style="width:NNNpx;height:auto"> baked in (mostly
+   from image-generation/Gamma-style pipelines that hardcode the
+   generated image's native pixel size). An inline style attribute beats
+   any stylesheet rule regardless of specificity - including
+   @tailwindcss/typography's own default `.prose img { max-width: 100% }`
+   - so on any viewport narrower than that fixed width, the image simply
+   overflows the article column and forces horizontal scroll on the
+   whole page. Only `!important` in an external stylesheet can override
+   an inline style; this reasserts responsive sizing without touching
+   font sizes and the actual data. */
+.prose img {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Raw <table> elements from WordPress's table block / pasted content
+   (108 posts) have no responsive handling by default - @tailwindcss/
+   typography styles them but doesn't make them scroll, so a wide table
+   (many columns) can overflow the viewport on mobile/tablet and force
+   the whole page to scroll horizontally. display:block + overflow-x:auto
+   turns the table itself into a horizontally-scrollable region without
+   needing to wrap it in an extra element. Scoped to .prose so it only
+   touches article body tables, not any other table markup on the site.
+   (The "cr-quick-table" pipeline already ships its own more elaborate
+   per-post mobile treatment - full card-style stacking - via an inline
+   <style> block with higher selector specificity, so this generic rule
+   correctly loses to it there and only applies to plain tables.) */
+.prose table {
+  display: block;
+  overflow-x: auto;
+}
+
 /* Amazon-affiliate product widgets ("Hostinger Affiliate" WP plugin),
    present in 89 of 295 posts' body HTML in four BEM variants
    (list-simple, list-cards, list-with-desc, single-type). On the live
@@ -71,7 +104,14 @@
 .hostinger-affiliate-block-list-cards__image img,
 .hostinger-affiliate-block-list-with-desc__image img,
 .hostinger-affiliate-block-single-type__image img {
-  @apply w-full h-full object-contain p-4;
+  @apply object-contain p-4;
+  /* !important + a selector more specific than the generic ".prose img"
+     rule below: without it, that rule's own !important (needed to beat
+     inline width:NNNpx on OTHER images in the article body) would win on
+     specificity ties and collapse these widget thumbnails to their
+     intrinsic size instead of filling the card. */
+  width: 100% !important;
+  height: 100% !important;
 }
 .hostinger-affiliate-block-list-simple__product-data,
 .hostinger-affiliate-block-list-cards__product_data {
@@ -201,5 +241,9 @@
   @apply m-0 flex-1 basis-[calc(33.333%-0.5rem)] min-w-[9rem];
 }
 .wp-block-gallery.is-layout-flex > .wp-block-image img {
-  @apply w-full h-full rounded-lg object-cover aspect-square;
+  @apply rounded-lg object-cover aspect-square;
+  /* !important: see the matching note on the hostinger widget image rule
+     above - needed to win over the generic ".prose img" override below. */
+  width: 100% !important;
+  height: 100% !important;
 }
