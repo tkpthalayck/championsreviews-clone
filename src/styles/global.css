@@ -185,3 +185,21 @@
 .hostinger-affiliate-table__value--is-amazon-button a {
   @apply inline-flex w-full items-center justify-center rounded-lg bg-[--color-brand-purple] px-3 py-2 text-sm font-semibold text-white no-underline hover:opacity-90 transition-opacity;
 }
+
+/* WordPress core's Gallery block (36 posts): `is-layout-flex` is core
+   block-library CSS (not a plugin), also never exported with post body
+   HTML, so these rendered as a plain vertical stack of full-width figures
+   instead of a wrapped multi-image grid. This doesn't reproduce WP's exact
+   internal gap/column-count math (which reads inline custom properties
+   this export doesn't carry) - a fixed ~3-column wrapping flex grid with
+   cropped square thumbnails is a close, consistently professional
+   approximation instead. */
+.wp-block-gallery.is-layout-flex {
+  @apply my-6 flex flex-wrap gap-3;
+}
+.wp-block-gallery.is-layout-flex > .wp-block-image {
+  @apply m-0 flex-1 basis-[calc(33.333%-0.5rem)] min-w-[9rem];
+}
+.wp-block-gallery.is-layout-flex > .wp-block-image img {
+  @apply w-full h-full rounded-lg object-cover aspect-square;
+}
