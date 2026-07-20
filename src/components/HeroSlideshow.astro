@@ -23,8 +23,9 @@ const { posts, id } = Astro.props;
         href={`${base}reviews/${post.data.slug}/`}
         class="hero-slide absolute inset-0 transition-opacity duration-700 ease-in-out"
         data-index={i}
-        style={i === 0 ? undefined : 'opacity:0'}
+        style={i === 0 ? undefined : 'opacity:0;pointer-events:none'}
         aria-hidden={i === 0 ? 'false' : 'true'}
+        tabindex={i === 0 ? undefined : -1}
       >
         {post.data.featuredImage && (
           <img
@@ -89,7 +90,10 @@ const { posts, id } = Astro.props;
       slides.forEach((slide, i) => {
         const active = i === current;
         slide.style.opacity = active ? '1' : '0';
+        slide.style.pointerEvents = active ? 'auto' : 'none';
         slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+        if (active) slide.removeAttribute('tabindex');
+        else slide.setAttribute('tabindex', '-1');
       });
       dots.forEach((dot, i) => dot.setAttribute('data-active', String(i === current)));
     }

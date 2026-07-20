@@ -36,27 +36,17 @@ const topCategories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).
   title="Discover the Best Picks from Amazon, Walmart & More"
   description="Champions Reviews compares real, well-reviewed products so you can shop with confidence - honest comparisons, buying guides, and the best deals across categories."
 >
+  {/* The page's one real H1 - kept for SEO/accessibility now that the
+      visible hero/search block below is gone (search lives in the header
+      only, per request); visually hidden since there's no longer a hero
+      banner for it to sit in. */}
+  <h1 class="sr-only">Discover the Best Picks from Amazon, Walmart &amp; More</h1>
+
   {heroSlides.length > 0 && (
     <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
       <HeroSlideshow posts={heroSlides} id="hero-slideshow" />
     </section>
   )}
-
-  <section class="bg-gradient-to-b from-[--color-brand-purple-dark] to-[--color-brand-purple] text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
-      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Discover the Best Picks<br class="hidden sm:block" /> from Amazon, Walmart &amp; More</h1>
-      <p class="mt-4 text-lg text-purple-100 max-w-2xl mx-auto">Real prices, real ratings, honest comparisons - so you can shop smarter, not harder.</p>
-      <form action={`${base}search/`} class="mt-8 max-w-xl mx-auto flex gap-2">
-        <label for="hero-search" class="sr-only">Search reviews</label>
-        <input id="hero-search" name="q" type="search" placeholder="Search for a product, comparison, or guide..." class="flex-1 rounded-lg px-4 py-3 text-gray-900 placeholder:text-gray-400" />
-        <button type="submit" class="rounded-lg bg-[--color-brand-gold] px-6 py-3 font-semibold text-gray-900 hover:opacity-90 transition-opacity">Search</button>
-      </form>
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-        <a href={`${base}reviews/`} class="rounded-lg bg-white px-6 py-3 font-semibold text-[--color-brand-purple-dark] hover:bg-purple-50 transition-colors">All Posts ({allPosts.length})</a>
-        <a href={`${base}guides/`} class="rounded-lg border border-white/40 px-6 py-3 font-semibold text-white hover:bg-white/10 transition-colors">Buying Guides</a>
-      </div>
-    </div>
-  </section>
 
   {trending.length > 0 && (
     <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
