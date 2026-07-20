@@ -3,6 +3,15 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { BASE } from '../lib/base';
 import '../styles/global.css';
+// A handful of posts' body HTML (from the "cr-" comparison-table content
+// pipeline) uses Font Awesome icon classes (fas/far/fab) for inline icons
+// (checkmarks, warning triangles, price tags, etc.) but the icon font
+// itself was never part of any post's own HTML, so those icons rendered
+// as invisible empty glyphs. Self-hosted via the npm package (bundled at
+// build time, same as every other dependency here) rather than a CDN
+// <link>, consistent with this project having zero external runtime
+// dependencies otherwise.
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 interface Props {
   title: string;

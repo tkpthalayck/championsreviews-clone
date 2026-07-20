@@ -114,15 +114,34 @@ export async function sanitizeBody(rawBody: string): Promise<{ html: string; sty
     for (const child of [...children]) {
       if (!isElement(child)) continue;
 
-      // <style>/<meta>/<title>/<base> are only valid in <head>, or - a few
-      // WordPress posts have an entire second HTML document pasted into
-      // their content - are leftovers from that document's own <head>.
+      // <style>/<meta>/<title>/<base>/<link> are only valid in <head>, or - a
+      // few WordPress posts have an entire second HTML document pasted into
+      // their content - are leftovers from that document's own <head>. A
+      // stray <link rel="stylesheet" href="https://cdnjs..."> (found
+      // pasted into 6 posts, apparently added so a Font Awesome-dependent
+      // widget would render standalone) is now redundant now that
+      // BaseLayout loads Font Awesome site-wide for every page - see
+      // BaseLayout.astro.
       if (child.tagName === 'style') {
         styles.push(defaultTreeAdapter.getTextNodeContent(child.childNodes[0] as any) ?? '');
         defaultTreeAdapter.detachNode(child);
         continue;
       }
-      if (child.tagName === 'meta' || child.tagName === 'title' || child.tagName === 'base') {
+      if (child.tagName === 'meta' || child.tagName === 'title' || child.tagName === 'base' || child.tagName === 'link') {
+        defaultTreeAdapter.detachNode(child);
+        continue;
+      }
+      // This static showcase ships zero JS by default (see README) and has
+      // no live checkout/conversion path for affiliate links, so a handful
+      // of posts' leftover <script src="..."> tags serve no function here
+      // even where they aren't overtly malicious: several are CJ
+      // Affiliate/Rakuten tracking-redirect pixels (anrdoezrs.net,
+      // dpbolvw.net, jdoqocy.com, kqzyfj.com, tkqlhce.com), one is a Reddit
+      // embed widget loader, two are Vimeo's player API. Removing them
+      // doesn't break anything visible: the CJ ones have no visible output
+      // at all, the Reddit/Vimeo ones only lose optional JS-driven embed
+      // polish, with the raw iframe/link still present and functional.
+      if (child.tagName === 'script') {
         defaultTreeAdapter.detachNode(child);
         continue;
       }

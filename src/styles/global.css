@@ -27,3 +27,161 @@
   --tw-prose-bold: var(--color-brand-purple-dark);
   --tw-prose-headings: var(--color-brand-purple-dark);
 }
+
+/* Amazon-affiliate product widgets ("Hostinger Affiliate" WP plugin),
+   present in 89 of 295 posts' body HTML in four BEM variants
+   (list-simple, list-cards, list-with-desc, single-type). On the live
+   WordPress site these are styled by the plugin's own stylesheet, which -
+   unlike inline <style> blocks - is never part of any single post's body
+   and so never reaches this static clone. Left unstyled, they rendered as
+   bare stacked divs (no card, no image sizing, no button), which is the
+   single biggest source of inconsistent, unprofessional-looking post
+   layouts across the site. Restyled here as cards matching PostCard's
+   existing visual language (rounded-2xl border, aspect-ratio image with
+   object-contain, brand-purple accents) so every post looks like the same
+   site regardless of which of the plugin's layouts the original author
+   picked. Typography plugin's own defaults (serif-ish headings, bullet
+   markers, link underlines) use zero-specificity `:where()` selectors
+   specifically so any class-based rule overrides them - these do, without
+   needing `not-prose` on the wrapper. */
+.hostinger-affiliate-block-wrap,
+.hostinger-affiliate-block-list-cards {
+  @apply my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5;
+}
+.hostinger-affiliate-block-list-simple,
+.hostinger-affiliate-block-list-cards__item {
+  @apply relative flex flex-col rounded-2xl border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-shadow duration-200;
+}
+.hostinger-affiliate-block-list-with-desc,
+.hostinger-affiliate-block-single-type {
+  @apply my-8 flex flex-col sm:flex-row gap-5 rounded-2xl border border-gray-200 bg-white overflow-hidden p-5;
+}
+.hostinger-affiliate-block-list-with-desc__inner-wrap {
+  @apply flex flex-col sm:flex-row gap-5 flex-1;
+}
+.hostinger-affiliate-block-list-simple__image,
+.hostinger-affiliate-block-list-cards__image {
+  @apply aspect-[16/10] overflow-hidden bg-gray-100 flex items-center justify-center;
+}
+.hostinger-affiliate-block-list-with-desc__image,
+.hostinger-affiliate-block-single-type__image {
+  @apply w-full sm:w-48 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden rounded-xl bg-gray-100 flex items-center justify-center;
+}
+.hostinger-affiliate-block-list-simple__image img,
+.hostinger-affiliate-block-list-cards__image img,
+.hostinger-affiliate-block-list-with-desc__image img,
+.hostinger-affiliate-block-single-type__image img {
+  @apply w-full h-full object-contain p-4;
+}
+.hostinger-affiliate-block-list-simple__product-data,
+.hostinger-affiliate-block-list-cards__product_data {
+  @apply flex flex-col flex-1 p-5 gap-2;
+}
+.hostinger-affiliate-block-list-with-desc__product-data,
+.hostinger-affiliate-block-single-type__product-data {
+  @apply flex flex-col flex-1 gap-2 min-w-0;
+}
+.hostinger-affiliate-block-list-simple__bestseller-label,
+.hostinger-affiliate-block-list-cards__bestseller-label,
+.hostinger-affiliate-block-list-with-desc__bestseller-label {
+  @apply self-start rounded-full bg-[--color-brand-gold] px-2.5 py-0.5 text-xs font-semibold text-gray-900;
+}
+.hostinger-affiliate-block-list-simple__product-title h3,
+.hostinger-affiliate-block-list-cards__product-title h3,
+.hostinger-affiliate-block-list-with-desc__product-title h3,
+.hostinger-affiliate-block-single-type__product-title h3 {
+  @apply font-bold text-gray-900 leading-snug text-base line-clamp-2;
+}
+.hostinger-affiliate-block-list-simple__product-title a,
+.hostinger-affiliate-block-list-cards__product-title a,
+.hostinger-affiliate-block-list-with-desc__product-title a,
+.hostinger-affiliate-block-single-type__product-title a {
+  @apply hover:text-[--color-brand-purple] transition-colors no-underline;
+}
+.hostinger-affiliate-block-list-with-desc__product-description ul,
+.hostinger-affiliate-block-single-type__product-description ul {
+  @apply mt-1 space-y-1 text-sm text-gray-600 list-disc pl-5;
+}
+.hostinger-affiliate-block-list-simple__product-pricing:empty,
+.hostinger-affiliate-block-list-cards__product-pricing:empty {
+  @apply hidden;
+}
+.hostinger-affiliate-block-list-simple__product-price,
+.hostinger-affiliate-block-list-cards__product-price,
+.hostinger-affiliate-block-list-with-desc__product-price,
+.hostinger-affiliate-block-single-type__product-price {
+  @apply text-lg font-bold text-[--color-brand-purple-dark];
+}
+.hostinger-affiliate-block-list-simple__product-actions,
+.hostinger-affiliate-block-list-with-desc__product-actions,
+.hostinger-affiliate-block-single-type__product-actions {
+  @apply mt-auto pt-3 flex items-center justify-between gap-3 flex-wrap;
+}
+.hostinger-affiliate-block-list-cards__product-button-wrap,
+.hostinger-affiliate-block-list-with-desc__product-button-wrap,
+.hostinger-affiliate-block-single-type__product-button-wrap {
+  @apply mt-3;
+}
+.hostinger-affiliate-block-list-simple__product-amazon-button,
+.hostinger-affiliate-block-list-cards__product-amazon-button,
+.hostinger-affiliate-block-list-with-desc__product-amazon-button,
+.hostinger-affiliate-block-single-type__product-amazon-button {
+  @apply inline-flex w-full items-center justify-center rounded-lg bg-[--color-brand-purple] px-4 py-2.5 font-semibold text-white no-underline hover:opacity-90 transition-opacity;
+}
+
+/* Same plugin's comparison-TABLE widget (separate from the card widgets
+   above) - a flat sequence of `__cell` divs meant to be read as a CSS
+   grid (1 label column + N product columns, wrapping every N+1 cells),
+   not a real <table>. The plugin itself renders two parallel copies,
+   toggled by breakpoint via the --is-desktop/--is-mobile modifier (same
+   underlying data, two different shapes) - honored here with the same
+   split rather than picking one, since the mobile shape (one product's
+   full feature set per 2-column block) doesn't just reflow from the
+   desktop grid shape (1 row per feature, all products side-by-side).
+   Cells carry their own inline background/text-color (from the site's
+   per-product theming) which still applies here at higher specificity -
+   only spacing/borders/typography needed adding. */
+.hostinger-affiliate-table-wrap {
+  @apply my-8 overflow-x-auto rounded-2xl border border-gray-200;
+}
+.hostinger-affiliate-table--is-desktop {
+  @apply hidden;
+}
+.hostinger-affiliate-table--is-mobile {
+  @apply grid grid-cols-[auto_1fr];
+}
+@media (min-width: 40rem) {
+  .hostinger-affiliate-table--is-desktop {
+    @apply grid;
+  }
+  .hostinger-affiliate-table--is-mobile {
+    @apply hidden;
+  }
+}
+.hostinger-affiliate-table--have-2-columns { grid-template-columns: minmax(7rem, 10rem) repeat(2, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-3-columns { grid-template-columns: minmax(7rem, 10rem) repeat(3, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-4-columns { grid-template-columns: minmax(7rem, 10rem) repeat(4, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-5-columns { grid-template-columns: minmax(7rem, 10rem) repeat(5, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-6-columns { grid-template-columns: minmax(7rem, 10rem) repeat(6, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-7-columns { grid-template-columns: minmax(7rem, 10rem) repeat(7, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-8-columns { grid-template-columns: minmax(7rem, 10rem) repeat(8, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-9-columns { grid-template-columns: minmax(7rem, 10rem) repeat(9, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table--have-10-columns { grid-template-columns: minmax(7rem, 10rem) repeat(10, minmax(8rem, 1fr)); }
+.hostinger-affiliate-table__cell {
+  @apply flex items-center border-b border-r border-gray-100 p-3 text-sm last:border-r-0;
+}
+.hostinger-affiliate-table__value--is-feature-label {
+  @apply font-semibold text-gray-700 bg-gray-50 -m-3 p-3 w-full;
+}
+.hostinger-affiliate-table__value--is-title a {
+  @apply font-semibold text-gray-900 hover:text-[--color-brand-purple] transition-colors no-underline line-clamp-3;
+}
+.hostinger-affiliate-table__value--is-thumbnail img {
+  @apply mx-auto max-h-20 w-auto object-contain;
+}
+.hostinger-affiliate-table__value--is-price {
+  @apply font-bold text-[--color-brand-purple-dark];
+}
+.hostinger-affiliate-table__value--is-amazon-button a {
+  @apply inline-flex w-full items-center justify-center rounded-lg bg-[--color-brand-purple] px-3 py-2 text-sm font-semibold text-white no-underline hover:opacity-90 transition-opacity;
+}
