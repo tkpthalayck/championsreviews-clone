@@ -29,12 +29,16 @@ const EXCLUDED_PAGE_SLUGS = new Set([
   'register', 'shop', 'shop-internal-placeholder', 'subscribe-for-latest-updates',
   'user', 'user-login-page', 'user-sign-up-form',
 ]);
-// Formerly excluded a post whose body was a ~430KB corrupted paste from an
-// unrelated Gamma.app export (leaked Next.js/Supabase internals) - fixed
-// directly on WordPress on 2026-07-19, so nothing is excluded here anymore.
-// Kept as an empty set (rather than removed outright) so any future
-// corrupted-content case has an obvious place to go.
-const EXCLUDED_POST_SLUGS = new Set([]);
+// Posts excluded because their content is known-bad (currently: product-
+// category mismatches found by scripts/audit-product-match.mjs, which
+// also maintains this file) rather than because the page itself is
+// non-functional on GitHub Pages (that's EXCLUDED_PAGE_SLUGS above). Kept
+// in a separate JSON file (not hardcoded here) so the daily audit
+// workflow can add to it without editing this script's source.
+const excludedPostsData = JSON.parse(
+  await fs.readFile(path.resolve('scripts/excluded-posts.json'), 'utf8'),
+);
+const EXCLUDED_POST_SLUGS = new Set(Object.keys(excludedPostsData));
 
 async function wpFetch(endpoint) {
   for (let attempt = 1; attempt <= 5; attempt++) {

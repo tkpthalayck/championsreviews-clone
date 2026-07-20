@@ -9,6 +9,10 @@ node_modules/
 # cached raw WP export data (re-fetchable via npm run export-content)
 scripts/.cache/
 
+# intermediate output from scripts/audit-product-match.mjs, consumed by
+# its GitHub Actions workflow to build an issue body - not meant to be committed
+product-match-findings.json
+
 # logs
 npm-debug.log*
 yarn-debug.log*

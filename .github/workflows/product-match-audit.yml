@@ -1,0 +1,76 @@
+name: Product-match audit (report only)
+
+on:
+  schedule:
+    - cron: '30 6 * * *' # 06:30 UTC daily, after the 06:00 content sync
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run product-match audit
+        # Report-only - see scripts/audit-product-match.mjs's header for
+        # why this never auto-deletes: an earlier version did, and a test
+        # run against the live corpus found 18 of its 19 flags were false
+        # positives (real products described in words the keyword rules
+        # didn't anticipate). This step can never modify content.
+        run: node scripts/audit-product-match.mjs
+
+      - name: Open or update a tracking issue if anything was flagged
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Product-match audit: posts flagged for review"
+          EXISTING=$(gh issue list --search "in:title \"$TITLE\"" --state open --json number --jq '.[0].number' || true)
+
+          if [ ! -f product-match-findings.json ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --body "Latest daily run ($(date -u +%Y-%m-%d)): nothing flagged. Closing."
+              gh issue close "$EXISTING"
+            fi
+            exit 0
+          fi
+
+          BODY_FILE=$(mktemp)
+          {
+            echo "Automated daily scan of the \"5 Best Options\" / \"5 Top-Rated Picks\" comparison posts found products whose title doesn't match a curated keyword rule for that post's category."
+            echo ""
+            echo "**This is a low-precision signal, not a confirmed problem.** A previous version of this check auto-deleted on these same rules and was wrong 18 times out of 19 (e.g. it flagged a real Bose soundbar as \"not home theater\", real pliers as \"not a plumbing tool\"). Please read each flagged product title yourself before acting - most of these will be fine as-is."
+            echo ""
+            echo "If a product genuinely doesn't belong (the way the removed rack-cabinets post's kitchen shelves didn't), add an entry to \`scripts/excluded-posts.json\` by hand and delete the post's content file in the same commit - see that file's existing entry for the format. There's no automated way to source a real replacement product/review here (no live Amazon product-data API is wired into this repo), so a genuine mismatch needs either a manually-written replacement post or a fix at the source on WordPress."
+            echo ""
+            echo "### Flagged this run"
+            node -e "
+              const fs = require('fs');
+              const findings = JSON.parse(fs.readFileSync('product-match-findings.json', 'utf8'));
+              for (const f of findings) {
+                console.log('- **' + f.slug + '** (' + f.title + ') - ' + f.flagged.length + '/' + f.totalProducts + ' flagged');
+                for (const p of f.flagged) console.log('  - ' + p);
+              }
+            "
+          } > "$BODY_FILE"
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+          else
+            gh label create "content-review" --description "Flagged by an automated audit for a human to check" --color "fbca04" 2>/dev/null || true
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE" --label "content-review"
+          fi
