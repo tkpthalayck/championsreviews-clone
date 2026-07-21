@@ -1,0 +1,16 @@
+{
+  "id": 5999,
+  "slug": "anthropic-in-early-talks-with-samsung-to-build-custom-claude-inference-chips",
+  "title": "Anthropic in Early Talks With Samsung to Build Custom Claude Inference Chips",
+  "date": "2026-07-20T14:08:45",
+  "modified": "2026-07-20T15:08:14",
+  "excerpt": "Anthropic, the maker of the Claude family of AI models, is reportedly in early discussions with&#8230;",
+  "categories": [],
+  "tags": [
+    "AI chips",
+    "artificial intelligence",
+    "Latest Tech News"
+  ],
+  "featuredImage": "/images/img-1712.svg",
+  "body": "<figure><img decoding=\"async\" src=\"/images/img-1712.svg\" alt=\"Anthropic logo\" style=\"max-width:100%;height:auto;\" /></figure>\n<p>Anthropic, the maker of the Claude family of AI models, is reportedly in early discussions with Samsung about developing a custom inference chip, according to TechCrunch.</p>\n<h3>The cost problem this is meant to solve</h3>\n<p>Anthropic&#8217;s compute bill for running Claude at scale has been widely reported at over $1 billion a month, almost all of it currently spent on off-the-shelf accelerators from suppliers like Nvidia and Amazon&#8217;s own chip lines. A custom chip designed specifically around Claude&#8217;s own inference workload could, in theory, lower the cost of serving each user query.</p>\n<h3>Why Samsung</h3>\n<p>Samsung has both chip design and chip fabrication capabilities in-house, giving it a different pitch than a pure foundry play like TSMC. Partnering with Samsung would let Anthropic explore a custom design without necessarily depending on TSMC&#8217;s already heavily-booked advanced-node capacity, which every other major AI lab is also competing for.</p>\n<h3>Why it matters</h3>\n<p>Anthropic joins OpenAI, Meta, Google, and reportedly DeepSeek in exploring custom AI silicon rather than buying exclusively off the shelf. Talks are described as early, so there&#8217;s no guarantee this turns into an actual shipped chip, but it&#8217;s another sign of how central compute cost has become to competition among frontier AI labs.</p>\n<p><em>Source: <a href=\"https://techcrunch.com/2026/07/02/anthropic-is-discussing-a-new-custom-chip-with-samsung/\" target=\"_blank\" rel=\"noopener noreferrer\">TechCrunch</a>.</em></p>\n"
+}

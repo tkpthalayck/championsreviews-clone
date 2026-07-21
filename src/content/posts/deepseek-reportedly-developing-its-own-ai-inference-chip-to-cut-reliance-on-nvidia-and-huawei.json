@@ -1,0 +1,16 @@
+{
+  "id": 5995,
+  "slug": "deepseek-reportedly-developing-its-own-ai-inference-chip-to-cut-reliance-on-nvidia-and-huawei",
+  "title": "DeepSeek Reportedly Developing Its Own AI Inference Chip to Cut Reliance on Nvidia and Huawei",
+  "date": "2026-07-20T14:08:12",
+  "modified": "2026-07-20T15:08:01",
+  "excerpt": "Chinese AI lab DeepSeek is developing its own AI accelerator chip, according to Reuters, citing three&#8230;",
+  "categories": [],
+  "tags": [
+    "AI chips",
+    "artificial intelligence",
+    "Latest Tech News"
+  ],
+  "featuredImage": "/images/img-1716.svg",
+  "body": "<figure><img decoding=\"async\" src=\"/images/img-1716.svg\" alt=\"DeepSeek logo\" style=\"max-width:100%;height:auto;\" /></figure>\n<p>Chinese AI lab DeepSeek is developing its own AI accelerator chip, according to Reuters, citing three people familiar with the matter. The move is aimed at reducing the company&#8217;s dependence on Nvidia and Huawei hardware, both of which it currently relies on to train and run its widely-used AI models.</p>\n<h3>What&#8217;s being built</h3>\n<p>Unlike a chip meant to train new models from scratch, DeepSeek&#8217;s project is reportedly focused on <strong>inference</strong> — the stage where an already-trained model actually generates responses to user queries. Inference is where the bulk of an AI company&#8217;s day-to-day compute costs pile up at scale, so an in-house inference chip could meaningfully cut operating costs if it works.</p>\n<h3>Where things stand</h3>\n<p>Reuters reports DeepSeek has been exploring building its own accelerators for roughly a year, but the effort is still early-stage. The company has reportedly been in talks with chip design firms, foundries, and memory suppliers, and has been trying to recruit experienced chip designers.</p>\n<h3>Why it matters</h3>\n<p>If DeepSeek pulls this off, it would be a notable strategic shift for a company that&#8217;s become China&#8217;s most visible AI success story — and it adds DeepSeek to a growing list of AI labs building custom silicon instead of buying it off the shelf. OpenAI unveiled its own first custom inference chip, codenamed Jalapeño, built with Broadcom, just last month, and Anthropic has separately been weighing its own chip effort with Samsung (see our related coverage). Export controls on advanced chip manufacturing and high-bandwidth memory to China remain a major obstacle for any Chinese firm trying to build cutting-edge silicon domestically.</p>\n<p><em>Source: <a href=\"https://www.usnews.com/news/top-news/articles/2026-07-07/exclusive-chinas-deepseek-developing-its-own-ai-chip-sources-say\" target=\"_blank\" rel=\"noopener noreferrer\">U.S. News &#038; World Report, reporting on Reuters&#8217; exclusive</a>.</em></p>\n"
+}

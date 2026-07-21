@@ -1,0 +1,17 @@
+{
+  "id": 5997,
+  "slug": "qualcomm-in-talks-to-acquire-ai-chip-startup-tenstorrent-for-up-to-10-billion",
+  "title": "Qualcomm in Talks to Acquire AI Chip Startup Tenstorrent for Up to $10 Billion",
+  "date": "2026-07-20T14:08:30",
+  "modified": "2026-07-20T19:13:13",
+  "excerpt": "Qualcomm is reportedly in talks to acquire AI chip design company Tenstorrent for somewhere between $8&#8230;",
+  "categories": [
+    "Root"
+  ],
+  "tags": [
+    "AI chips",
+    "Latest Tech News"
+  ],
+  "featuredImage": "/images/img-1720.svg",
+  "body": "<figure><img decoding=\"async\" src=\"/images/img-1720.svg\" alt=\"Qualcomm logo\" style=\"max-width:100%;height:auto;\" /></figure>\n<p>Qualcomm is reportedly in talks to acquire AI chip design company Tenstorrent for somewhere between $8 billion and $10 billion, according to The Information.</p>\n<h3>Who is Tenstorrent</h3>\n<p>Founded in 2016, Tenstorrent designs AI accelerator chips built around the open RISC-V instruction set architecture, rather than proprietary designs like Arm or x86. The company is led by Jim Keller, a well-known chip engineer whose past work includes stints at Apple and overseeing Tesla&#8217;s efforts to build its own self-driving chip.</p>\n<h3>Why Qualcomm wants it</h3>\n<p>Qualcomm has built its business primarily around chips for phones and other end-user devices. A Tenstorrent acquisition would be a clear signal of Qualcomm trying to push further into the data center AI chip market — the upstream side of the AI boom where Nvidia currently dominates — rather than staying focused only on the devices that eventually run AI models.</p>\n<h3>Why it matters</h3>\n<p>If completed, this would be one of the largest AI chip acquisitions of the year, and would hand Qualcomm a RISC-V-based accelerator design team with real engineering pedigree just as more chip buyers look for alternatives to Nvidia&#8217;s ecosystem. Nothing has been finalized yet, and terms could still change.</p>\n<p><em>Source: <a href=\"https://finance.yahoo.com/technology/ai/articles/qualcomm-talks-acquire-ai-chip-230401789.html\" target=\"_blank\" rel=\"noopener noreferrer\">Yahoo Finance, citing The Information</a>.</em></p>\n"
+}

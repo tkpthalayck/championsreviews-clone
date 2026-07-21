@@ -1,0 +1,16 @@
+{
+  "id": 6004,
+  "slug": "quix-quantum-ships-carina-billed-as-the-first-room-temperature-photonic-quantum-computer-for-data-centers",
+  "title": "QuiX Quantum Ships Carina, Billed as the First Room-Temperature Photonic Quantum Computer for Data Centers",
+  "date": "2026-07-20T14:09:27",
+  "modified": "2026-07-20T15:08:28",
+  "excerpt": "Netherlands-based QuiX Quantum has delivered Carina, described as the first universal photonic quantum computer designed for&#8230;",
+  "categories": [],
+  "tags": [
+    "artificial intelligence",
+    "Latest Tech News",
+    "Quantum Computing"
+  ],
+  "featuredImage": "/images/img-1704.jpg",
+  "body": "<figure><img decoding=\"async\" src=\"/images/img-1704.jpg\" alt=\"Photonic quantum computing hardware\" style=\"max-width:100%;height:auto;\" /></figure>\n<p>Netherlands-based QuiX Quantum has delivered Carina, described as the first universal photonic quantum computer designed for real customer deployment rather than a research lab, according to Forbes.</p>\n<h3>What makes it different</h3>\n<p>Most quantum computers today need extreme cooling — often colder than deep space — to keep their qubits stable, which means they live in specialized labs. Carina uses photonics (light) to encode and process quantum information instead, which lets it operate at room temperature and fit into a standard data center server rack, rather than requiring dedicated cryogenic infrastructure.</p>\n<h3>How it works, roughly</h3>\n<p>Carina relies on an approach called measurement-based quantum computing, using on-chip &#8220;cluster-state&#8221; generation — essentially building the quantum resource it needs directly on the photonic chip itself, then measuring it in a way that performs the computation. A separate research breakthrough from Paderborn University earlier in July, using a time-multiplexed architecture, demonstrated a related path toward more reliably scaling this style of photonic quantum hardware.</p>\n<h3>Why it matters</h3>\n<p>The biggest practical obstacle to useful quantum computing has never really been whether it works in principle — it&#8217;s whether it can be built at a scale, cost, and reliability that make it usable outside a physics lab. A system that fits into existing data center racks at room temperature is a meaningfully different pitch than the ultra-cold, lab-bound quantum computers most people picture, even though photonic approaches still have real technical hurdles of their own to solve at larger scales.</p>\n<p><em>Source: <a href=\"https://www.forbes.com/sites/johnkoetsier/2026/07/14/heres-the-first-universal-photonic-quantum-computer-you-can-actually-install/\" target=\"_blank\" rel=\"noopener noreferrer\">Forbes</a>.</em></p>\n"
+}

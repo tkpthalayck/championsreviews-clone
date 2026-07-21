@@ -1,0 +1,16 @@
+{
+  "id": 5996,
+  "slug": "metas-next-generation-mtia-ai-chips-set-to-enter-production-in-september",
+  "title": "Meta&#8217;s Next-Generation MTIA AI Chips Set to Enter Production in September",
+  "date": "2026-07-20T14:08:21",
+  "modified": "2026-07-20T15:08:04",
+  "excerpt": "Meta is on track to begin manufacturing the newest version of its in-house AI chip, the&#8230;",
+  "categories": [],
+  "tags": [
+    "AI chips",
+    "artificial intelligence",
+    "Latest Tech News"
+  ],
+  "featuredImage": "/images/img-1714.svg",
+  "body": "<figure><img decoding=\"async\" src=\"/images/img-1714.svg\" alt=\"Meta logo\" style=\"max-width:100%;height:auto;\" /></figure>\n<p>Meta is on track to begin manufacturing the newest version of its in-house AI chip, the MTIA (Meta Training and Inference Accelerator), starting in September, according to TechCrunch.</p>\n<h3>The chip and its partners</h3>\n<p>Meta designs the MTIA chip in-house but doesn&#8217;t build it alone: the design work is done in partnership with Broadcom, while actual fabrication will be handled by TSMC, the world&#8217;s largest contract chipmaker. This mirrors the pattern several other AI labs are following — designing the chip yourself, but leaning on Broadcom and TSMC for the parts of the process that require decades of specialized manufacturing expertise.</p>\n<h3>Why Meta wants its own chips</h3>\n<p>Meta runs enormous AI workloads across its own products — ad ranking, content recommendation, and its Llama family of models among them — and buying every accelerator from Nvidia at market price is expensive at that scale. A custom inference chip, tuned specifically for Meta&#8217;s own workloads, can be cheaper to run per unit of compute than general-purpose GPUs, even after accounting for the up-front cost of designing it.</p>\n<h3>Why it matters</h3>\n<p>Meta joins Google (TPU), Amazon (Trainium/Inferentia), OpenAI (Jalapeño, with Broadcom), and reportedly Anthropic and DeepSeek in the industry-wide move toward custom AI silicon. For a company the size of Meta, even modest efficiency gains per chip translate into massive savings at the scale of its global data center footprint.</p>\n<p><em>Source: <a href=\"https://techcrunch.com/2026/07/09/metas-new-ai-chips-will-begin-production-in-september/\" target=\"_blank\" rel=\"noopener noreferrer\">TechCrunch</a>.</em></p>\n"
+}
